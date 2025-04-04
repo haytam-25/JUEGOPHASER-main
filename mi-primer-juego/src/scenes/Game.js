@@ -9,6 +9,8 @@ export class Game extends Scene
 
     preload ()
     {
+
+    
         this.load.setPath('assets');
         
         this.load.image('background', 'bg.png');
@@ -30,8 +32,14 @@ export class Game extends Scene
 
     create ()
     {
-       
+        
         this.add.image(400, 300, 'sky');
+        
+        
+        this.score=0;
+        this.scoreText= this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+       
+        
 
         this.suelos=this.physics.add.staticGroup();
 
@@ -46,7 +54,7 @@ export class Game extends Scene
 
         this.player = this.physics.add.sprite(100, 450, 'dude');
 
-        this.player.setBounce(0.6);
+        this.player.setBounce(0.3);
         this.player.setCollideWorldBounds(true);
 
 
@@ -82,11 +90,59 @@ export class Game extends Scene
 
         this.cursors = this.input.keyboard.createCursorKeys();
 
+        this.inicializarEstrellas();
+        this.inicializarBombas();
+
     }
+
+
+    inicializarEstrellas(){
+
+        this.stars = this.physics.add.group();
+        var i=0;
+        for (i=0;i<11;i++){
+            var star=this.stars.create(12+(i*70), 0, 'star');
+            star.setBounceY(Phaser.Math.FloatBetween(0.4,0.8));
+        }
+
+        this.physics.add.collider(this.stars, this.suelos);
+
+        this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this);
+
+    }
+
+    collectStar (player,star)
+    {
+        star.disableBody(true, true);
+
+        this.score+=10;
+        this.scoreText.setText('Score: ' + this.score);
+
+        if(this.stars.countActive(true)==0){
+            var i=0;
+            for(i=0;i<this.stars.getChildren().length;i++){
+                var starTemp=this.stars.getChildren() [i];
+                starTemp.enableBody(true,starTemp.x,0,true,true);
+            }
+        }
+
+    }
+
+    inicializarBombas(){
+
+        this.bombs = this.physics.add.group();
+
+        this.physics.add.collider(this.bombs, this.platforms);
+
+        this.physics.add.collider(this.player, this.bombs, this.hitBomb, null, this);
+
+    }
+
+
 
     update(){
 
-        if (this.cursors.left.isDown)
+        if (this.cursors.left.isDown || this.input.keyboard.addKey("A").isDown)
             {
                 this.player.setVelocityX(-160);
             
@@ -105,7 +161,7 @@ export class Game extends Scene
                 this.player.anims.play('turn');
             }
             
-            if (this.cursors.up.isDown && this.player.body.touching.down)
+            if (this.cursors.up.isDown) // && this.player.body.touching.down) esto hace el doble salto
             {
                 this.player.setVelocityY(-330);
             }
