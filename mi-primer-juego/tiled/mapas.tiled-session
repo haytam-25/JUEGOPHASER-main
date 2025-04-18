@@ -1,0 +1,34 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "mapa1.tmx",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "mapa1.tmx": {
+            "scale": 1,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 292,
+                "y": 387.5
+            }
+        },
+        "mapa1.tmx#tileset1": {
+            "scaleInDock": 1
+        }
+    },
+    "last.exportedFilePath": "C:/Users/hayta/JUEGOPHASER-main/mi-primer-juego/public/assets/tilemaps",
+    "last.imagePath": "C:/Users/hayta/JUEGOPHASER-main/mi-primer-juego/public/assets/tilesets",
+    "map.lastUsedExportFilter": "Todos los archivos (*)",
+    "map.lastUsedFormat": "tmx",
+    "openFiles": [
+        "mapa1.tmx"
+    ],
+    "project": "mapas.tiled-project",
+    "recentFiles": [
+        "mapa1.tmx"
+    ],
+    "tileset.embedInMap": true
+}

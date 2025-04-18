@@ -23,6 +23,10 @@ export class Game extends Scene
         
         this.load.spritesheet('dude', 'dude.png', { frameWidth: 32, frameHeight: 48 });
 
+        this.load.image('tiles','tilesets/tileset1.png');
+
+        this.load.tilemapTiledJSON('mapa1', 'tilemaps/mapa1.json');
+
 
         // this.load.spritesheet('cr7sprite', 'cr7spritesheet.png', { frameWidth: 80, frameHeight: 155 });
 
@@ -54,13 +58,13 @@ export class Game extends Scene
 
         this.player = this.physics.add.sprite(100, 450, 'dude');
 
-        this.player.setBounce(0.3);
+        this.player.setBounce(0.1);
         this.player.setCollideWorldBounds(true);
 
 
         // gravedad del personaje
 
-        this.player.body.setGravityY(30);
+        this.player.body.setGravityY(10);
 
         // animaciones
 
@@ -95,6 +99,12 @@ export class Game extends Scene
 
     }
 
+    inicializarMapa(){
+        var mapa1 =this.make.tilemap({key: 'mapa1'});
+
+        var tileset1 = mapa1.addTilesetImage('tileset1', 'tileset1');
+        var capaTierra = mapa1.createLayer('Tierra', tileset1, 0, 0);
+    }
 
     inicializarEstrellas(){
 
@@ -163,7 +173,7 @@ export class Game extends Scene
             
             if (this.cursors.up.isDown) // && this.player.body.touching.down) esto hace el doble salto
             {
-                this.player.setVelocityY(-330);
+                this.player.setVelocityY(-200);
             }
 
 
