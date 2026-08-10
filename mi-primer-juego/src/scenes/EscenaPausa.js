@@ -1,6 +1,5 @@
 import { Scene } from 'phaser';
-
-const FUENTE = '"Press Start 2P", sans-serif';
+import { ANCHO, ALTO, FUENTE_TITULO, FUENTE_TEXTO } from '../medidas.js';
 
 export class EscenaPausa extends Scene {
     constructor() {
@@ -8,21 +7,28 @@ export class EscenaPausa extends Scene {
     }
 
     create() {
-        this.add.rectangle(400, 300, 800, 600, 0x000000, 0.5); // fondo oscuro semitransparente
-        this.add.text(300, 200, 'Pausa', { fontSize: '32px', fill: '#fff', fontFamily: FUENTE });
+        this.add.rectangle(ANCHO / 2, ALTO / 2, ANCHO, ALTO, 0x000000, 0.6);
 
-        this.crearOpcion(260, 'Continuar', '#0f0', nivel => {
+        this.add.text(ANCHO / 2, 160, 'PAUSA', {
+            fontSize: '54px',
+            fill: '#FFD700',
+            fontFamily: FUENTE_TITULO,
+            stroke: '#3b1d05',
+            strokeThickness: 8
+        }).setOrigin(0.5);
+
+        this.crearOpcion(290, 'Continuar', '#7CFC00', nivel => {
             this.scene.stop();
             this.scene.resume(nivel);
         });
 
-        this.crearOpcion(310, 'Reiniciar', '#f00', nivel => {
+        this.crearOpcion(360, 'Reiniciar', '#ff5555', nivel => {
             this.scene.stop('EscenaPausa');
             this.scene.stop(nivel);
             this.scene.start(nivel);
         });
 
-        this.crearOpcion(360, 'Volver al Menú', '#ff0', nivel => {
+        this.crearOpcion(430, 'Volver al Menú', '#FFD700', nivel => {
             this.scene.stop('EscenaPausa');
             this.scene.stop(nivel);
             this.scene.start('EscenaMenu');
@@ -34,18 +40,27 @@ export class EscenaPausa extends Scene {
      * el nivel que quedo pausado y se lo pasa como parametro.
      */
     crearOpcion(y, texto, color, accion) {
-        this.add.text(290, y, texto, { fontSize: '26px', fill: color, fontFamily: FUENTE })
-            .setInteractive()
-            .on('pointerdown', () => {
-                const nivel = this.buscarNivelPausado();
+        const boton = this.add.text(ANCHO / 2, y, texto, {
+            fontSize: '30px',
+            fill: color,
+            fontFamily: FUENTE_TEXTO
+        })
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
 
-                if (!nivel) {
-                    console.error('❌ No se encontró una escena pausada.');
-                    return;
-                }
+        boton.on('pointerover', () => boton.setScale(1.12));
+        boton.on('pointerout', () => boton.setScale(1));
 
-                accion(nivel);
-            });
+        boton.on('pointerdown', () => {
+            const nivel = this.buscarNivelPausado();
+
+            if (!nivel) {
+                console.error('❌ No se encontró una escena pausada.');
+                return;
+            }
+
+            accion(nivel);
+        });
     }
 
     // Devuelve la clave de la escena que esta pausada por detras (el nivel en curso)

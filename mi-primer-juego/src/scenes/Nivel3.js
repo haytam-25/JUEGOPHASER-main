@@ -1,5 +1,6 @@
 import { Math as MathPhaser } from 'phaser';
-import { NivelBase, ANCHO } from './NivelBase';
+import { NivelBase } from './NivelBase';
+import { ANCHO, ALTO, FUENTE_TEXTO } from '../medidas.js';
 
 // Ajustes de las bolas de fuego
 const BOLA = {
@@ -7,7 +8,7 @@ const BOLA = {
     tamanoTextura: 48,
     xSalida: -40,          // fuera de pantalla por la izquierda
     alturaMinima: 100,
-    alturaMaxima: 500,
+    alturaMaxima: ALTO - 100,
     velocidadMinima: 140,
     velocidadMaxima: 220,
     velocidadPorRonda: 15, // cada vuelta completa las bolas van un poco mas rapido
@@ -40,10 +41,10 @@ export class Nivel3 extends NivelBase
 
         this.bolasFuego = this.physics.add.group({ allowGravity: false });
 
-        this.bolasText = this.add.text(16, 50, 'Bolas de fuego: 0', {
+        this.bolasText = this.add.text(24, 52, 'Bolas de fuego: 0', {
             fontSize: '22px',
             fill: this.ajustes.colorTexto,
-            fontFamily: '"Archivo Black", sans-serif'
+            fontFamily: FUENTE_TEXTO
         }).setDepth(10);
 
         this.physics.add.overlap(this.player, this.bolasFuego, this.morirJugador, null, this);

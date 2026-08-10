@@ -1,10 +1,8 @@
 import { Scene, Math as MathPhaser, Input } from 'phaser';
+import { ANCHO, ALTO, DESPLAZAMIENTO_X, FUENTE_TITULO, FUENTE_TEXTO } from '../medidas.js';
 
-// Medidas del juego (las mismas que la config de main.js)
-export const ANCHO = 800;
-export const ALTO = 600;
-
-// Ajustes del jugador, iguales en los tres niveles
+// Ajustes del jugador, iguales en los tres niveles.
+// La x es relativa al mapa: luego se le suma DESPLAZAMIENTO_X.
 const JUGADOR = {
     x: 100,
     y: 450,
@@ -23,7 +21,7 @@ const FAJOS = {
 };
 
 /**
- * Clase base con todo lo que comparten los tres niveles: mapa, jugador,
+ * Clase base con todo lo que comparten los tres niveles: fondo, mapa, jugador,
  * animaciones, marcador, controles, fajos y pinchos.
  *
  * Cada nivel solo pasa sus ajustes al constructor y decide que ocurre
@@ -57,8 +55,7 @@ export class NivelBase extends Scene {
 
     create ()
     {
-        this.add.image(ANCHO / 2, ALTO / 2, this.ajustes.fondo.clave);
-
+        this.crearFondo();
         this.crearMapa();
         this.crearAnimaciones();
         this.crearJugador();
@@ -70,18 +67,36 @@ export class NivelBase extends Scene {
         this.alCrear();
     }
 
+    // Agranda el fondo hasta cubrir toda la ventana, sin deformarlo
+    crearFondo ()
+    {
+        const fondo = this.add.image(ANCHO / 2, ALTO / 2, this.ajustes.fondo.clave);
+        const escala = Math.max(ANCHO / fondo.width, ALTO / fondo.height);
+
+        fondo.setScale(escala);
+    }
+
     crearMapa ()
     {
         this.mapa = this.make.tilemap({ key: this.ajustes.mapa.clave });
 
-        const tileset = this.mapa.addTilesetImage('objetos tierra', 'tiles');
-        this.mapa.createLayer(this.ajustes.mapa.capaTierra, tileset, 0, 0);
+        // Cada tileset del mapa usa la imagen de "objetos tierra" o la de "pinchos",
+        // segun su nombre. Hay que registrarlos todos para que Phaser sepa dibujar
+        // cualquier tile pintado en Tiled, sea del tipo que sea.
+        const tilesets = this.mapa.tilesets.map(ts => {
+            const claveImagen = ts.name.toLowerCase().includes('pincho') ? 'pinchos' : 'tiles';
+            return this.mapa.addTilesetImage(ts.name, claveImagen);
+        });
+
+        this.tilesetPinchos = tilesets.find(ts => ts.name.toLowerCase().includes('pincho'));
+
+        this.capaTierra = this.mapa.createLayer(this.ajustes.mapa.capaTierra, tilesets, DESPLAZAMIENTO_X, 0);
 
         // Colisiones invisibles dibujadas a mano en Tiled
         this.colTierraObjects = this.physics.add.staticGroup();
 
         this.mapa.getObjectLayer(this.ajustes.mapa.capaColisiones).objects.forEach(obj => {
-            const colision = this.colTierraObjects.create(obj.x, obj.y, null);
+            const colision = this.colTierraObjects.create(obj.x + DESPLAZAMIENTO_X, obj.y, null);
             colision.setSize(obj.width, obj.height);
             colision.setVisible(false);
             colision.body.setOffset(10, 20);
@@ -119,7 +134,7 @@ export class NivelBase extends Scene {
 
     crearJugador ()
     {
-        this.player = this.physics.add.sprite(JUGADOR.x, JUGADOR.y, 'pana');
+        this.player = this.physics.add.sprite(JUGADOR.x + DESPLAZAMIENTO_X, JUGADOR.y, 'pana');
 
         this.player.setBounce(JUGADOR.rebote);
         this.player.setCollideWorldBounds(false);
@@ -134,7 +149,9 @@ export class NivelBase extends Scene {
 
         for (let i = 0; i < FAJOS.cantidad; i++)
         {
-            const fajo = this.fajos.create(FAJOS.margenIzquierdo + (i * FAJOS.separacion), 0, 'fajo');
+            const x = FAJOS.margenIzquierdo + (i * FAJOS.separacion) + DESPLAZAMIENTO_X;
+            const fajo = this.fajos.create(x, 0, 'fajo');
+
             fajo.setBounceY(MathPhaser.FloatBetween(0.4, 0.8));
         }
 
@@ -142,13 +159,23 @@ export class NivelBase extends Scene {
         this.physics.add.overlap(this.player, this.fajos, this.recogerFajo, null, this);
     }
 
+    // Un pincho por cada tile del tileset "pinchos" pintado en la capa de tierra:
+    // basta con pintarlo en Tiled, no hace falta marcar nada mas a mano.
     crearPinchos ()
     {
         this.pinchos = this.physics.add.staticGroup();
 
-        this.mapa.getObjectLayer('pinchos').objects.forEach(obj => {
-            const pincho = this.pinchos.create(obj.x, obj.y - obj.height, 'pinchos').setOrigin(0);
-            pincho.body.setOffset(20, 15);
+        this.capaTierra.forEachTile(tile => {
+            if (tile.index === this.tilesetPinchos.firstgid)
+            {
+                const pincho = this.pinchos
+                    .create(tile.pixelX + DESPLAZAMIENTO_X, tile.pixelY, null)
+                    .setOrigin(0);
+
+                pincho.setSize(tile.width, tile.height);
+                pincho.setVisible(false);
+                pincho.body.setOffset(20, 15);
+            }
         });
 
         this.physics.add.overlap(this.player, this.pinchos, this.morirJugador, null, this);
@@ -162,16 +189,27 @@ export class NivelBase extends Scene {
 
     crearMarcador ()
     {
-        const estilo = {
-            fontSize: '27px',
-            fill: this.ajustes.colorTexto,
-            fontFamily: '"Archivo Black", sans-serif'
-        };
+        const color = this.ajustes.colorTexto;
 
         this.puntos = 0;
-        this.puntosText = this.add.text(16, 16, 'Puntuacion: 0', estilo);
-        this.nivelText = this.add.text(340, 16, this.ajustes.titulo, estilo);
-        this.controlesText = this.add.text(600, 16, 'Menu: ESC ', { fontSize: '27px', fill: this.ajustes.colorTexto });
+
+        this.puntosText = this.add.text(24, 16, 'Puntuacion: 0', {
+            fontSize: '24px',
+            fill: color,
+            fontFamily: FUENTE_TEXTO
+        });
+
+        this.nivelText = this.add.text(ANCHO / 2, 14, this.ajustes.titulo, {
+            fontSize: '30px',
+            fill: color,
+            fontFamily: FUENTE_TITULO
+        }).setOrigin(0.5, 0);
+
+        this.controlesText = this.add.text(ANCHO - 24, 16, 'Menu: ESC', {
+            fontSize: '24px',
+            fill: color,
+            fontFamily: FUENTE_TEXTO
+        }).setOrigin(1, 0);
 
         // El marcador siempre por encima del jugador y de los objetos
         [ this.puntosText, this.nivelText, this.controlesText ].forEach(texto => texto.setDepth(10));

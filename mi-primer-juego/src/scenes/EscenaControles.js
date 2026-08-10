@@ -1,4 +1,12 @@
 import { Scene } from 'phaser';
+import { ANCHO, ALTO, FUENTE_TITULO, FUENTE_TEXTO } from '../medidas.js';
+
+const CONTROLES = [
+    '←   Mover a la izquierda',
+    '→   Mover a la derecha',
+    '↑   Saltar',
+    'ESC  Pausa'
+];
 
 export class EscenaControles extends Scene {
     constructor() {
@@ -6,26 +14,34 @@ export class EscenaControles extends Scene {
     }
 
     create() {
-        this.add.rectangle(400, 300, 800, 600, 0x000000, 0.8);
+        this.add.rectangle(ANCHO / 2, ALTO / 2, ANCHO, ALTO, 0x000000, 0.85);
 
-        this.add.text(220, 100, 'Controles del Juego', {
-            fontSize: '32px',
-            fill: '#fff',
-            fontFamily: '"Archivo Black", sans-serif'
+        this.add.text(ANCHO / 2, 110, 'CONTROLES', {
+            fontSize: '54px',
+            fill: '#FFD700',
+            fontFamily: FUENTE_TITULO,
+            stroke: '#3b1d05',
+            strokeThickness: 8
+        }).setOrigin(0.5);
+
+        CONTROLES.forEach((linea, i) => {
+            this.add.text(ANCHO / 2, 230 + (i * 55), linea, {
+                fontSize: '26px',
+                fill: '#ffffff',
+                fontFamily: FUENTE_TEXTO
+            }).setOrigin(0.5);
         });
 
-        this.add.text(100, 200, '← : Mover a la izquierda', { fontSize: '20px', fill: '#FFD700' });
-        this.add.text(100, 240, '→ : Mover a la derecha', { fontSize: '20px', fill: '#FFD700' });
-        this.add.text(100, 280, '↑ : Saltar', { fontSize: '20px', fill: '#FFD700' });
-        this.add.text(100, 320, 'ESC: Pausa', { fontSize: '20px', fill: '#FFD700' });
-
-        this.add.text(280, 420, ' VOLVER  MENÚ ', {
-            fontSize: '22px',
-            fill: '#0f0'
+        const boton = this.add.text(ANCHO / 2, 500, 'Volver al menú', {
+            fontSize: '30px',
+            fill: '#7CFC00',
+            fontFamily: FUENTE_TEXTO
         })
-        .setInteractive()
-        .on('pointerdown', () => {
-            this.scene.start('EscenaMenu');
-        });
+            .setOrigin(0.5)
+            .setInteractive({ useHandCursor: true });
+
+        boton.on('pointerover', () => boton.setScale(1.12));
+        boton.on('pointerout', () => boton.setScale(1));
+        boton.on('pointerdown', () => this.scene.start('EscenaMenu'));
     }
 }
