@@ -1,0 +1,98 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "mapatierranivel3.tmx",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "": {
+            "scaleInDock": 1
+        },
+        "#objetos tierra": {
+            "scaleInDock": 1
+        },
+        "#pinchos": {
+            "scaleInDock": 1
+        },
+        "#tilesetnivel2": {
+            "scaleInDock": 1
+        },
+        "mapatierra.tmx": {
+            "expandedObjectLayers": [
+                2,
+                5
+            ],
+            "scale": 0.75,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 480.66666666666663,
+                "y": 319.33333333333326
+            }
+        },
+        "mapatierra.tmx#objetos tierra": {
+            "scaleInDock": 1
+        },
+        "mapatierra.tmx#pinchos": {
+            "scaleInDock": 1
+        },
+        "mapatierranivel2.tmx": {
+            "expandedObjectLayers": [
+                3,
+                2
+            ],
+            "scale": 0.5,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 472,
+                "y": 319
+            }
+        },
+        "mapatierranivel2.tmx#objetos tierra": {
+            "scaleInDock": 1
+        },
+        "mapatierranivel2.tmx#pinchos": {
+            "scaleInDock": 1
+        },
+        "mapatierranivel2.tmx#tilesetnivel2": {
+            "scaleInDock": 1
+        },
+        "mapatierranivel3.tmx": {
+            "expandedObjectLayers": [
+                5,
+                4
+            ],
+            "scale": 0.5,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 624,
+                "y": 251
+            }
+        },
+        "mapatierranivel3.tmx#objetos tierra": {
+            "scaleInDock": 1
+        },
+        "mapatierranivel3.tmx#pinchos": {
+            "scaleInDock": 1
+        }
+    },
+    "last.exportedFilePath": "C:/Users/hayta/JUEGOPHASER-main/actividad-6-haytam-25/mi-primer-juego/public/assets/tilemaps",
+    "last.imagePath": "C:/Users/hayta/JUEGOPHASER-main/actividad-6-haytam-25/mi-primer-juego/public/assets/tilesets",
+    "map.lastUsedExportFilter": "JSON map files (*.tmj *.json)",
+    "map.lastUsedFormat": "tmx",
+    "openFiles": [
+        "mapatierra.tmx",
+        "mapatierranivel2.tmx",
+        "mapatierranivel3.tmx"
+    ],
+    "project": "proyectotiled.tiled-project",
+    "recentFiles": [
+        "mapatierra.tmx",
+        "mapatierranivel2.tmx",
+        "mapatierranivel3.tmx"
+    ],
+    "tileset.embedInMap": true,
+    "tileset.transparentColor": "#be9f75",
+    "tileset.useTransparentColor": false
+}
