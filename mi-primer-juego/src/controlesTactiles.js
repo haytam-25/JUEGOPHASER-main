@@ -28,7 +28,7 @@ export function esDispositivoTactil ()
 
 // Ajustes visuales del joystick y el boton de salto
 const JOYSTICK = {
-    radioBase: 55,
+    radioBase: 90,
     radioStick: 28,
     margenX: 100,
     margenY: 100,
@@ -36,7 +36,7 @@ const JOYSTICK = {
 };
 
 const BOTON_SALTO = {
-    radio: 45,
+    radio: 55,
     margenX: 90,
     margenY: 100
 };
