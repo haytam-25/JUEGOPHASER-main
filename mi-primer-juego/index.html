@@ -12,6 +12,18 @@
     <div id="app">
         <div id="game-container"></div>
     </div>
+
+    <!--
+        Aviso para moviles y tablets en vertical. El juego es 16:9 (1138x640), asi
+        que en vertical quedaria como una franja diminuta. El CSS lo enseña solo
+        cuando toca (pantalla tactil + orientacion vertical); en el ordenador nunca.
+    -->
+    <div id="girar-dispositivo">
+        <div class="girar-movil" aria-hidden="true"></div>
+        <h1>Gira el dispositivo</h1>
+        <p>Ponlo en horizontal para jugar</p>
+    </div>
+
     <script type="module" src="src/main.js"></script>
 </body>
 </html>

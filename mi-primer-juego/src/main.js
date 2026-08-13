@@ -1,5 +1,6 @@
 import { AUTO, Scale, Game } from 'phaser';
 import { ANCHO, ALTO } from './medidas.js';
+import { esDispositivoTactil } from './controlesTactiles.js';
 import { EscenaMenu as Menu } from './scenes/EscenaMenu.js';
 import { Game as EscenarioPrincipal } from './scenes/Game.js';
 import { EscenaPausa as Pausa } from './scenes/EscenaPausa.js';
@@ -19,6 +20,11 @@ const config = {
     scale: {
         mode: Scale.FIT,
         autoCenter: Scale.CENTER_BOTH
+    },
+
+    // Permite mantener pulsado el joystick y el boton de salto a la vez en pantallas tactiles
+    input: {
+        activePointers: 2
     },
 
     physics: {
@@ -53,7 +59,31 @@ async function iniciarJuego ()
         console.warn('No se pudieron cargar las fuentes, se usaran las del sistema.', error);
     }
 
-    new Game(config);
+    vigilarOrientacion(new Game(config));
+}
+
+/**
+ * Si el movil se pone en vertical durante una partida, el aviso de "gira el
+ * dispositivo" tapa la pantalla. Pausamos el nivel para que el jugador no se
+ * quede corriendo a ciegas y muera sin verlo.
+ */
+function vigilarOrientacion (juego)
+{
+    const vertical = window.matchMedia('(orientation: portrait)');
+
+    vertical.addEventListener('change', () => {
+        if (!vertical.matches || !esDispositivoTactil())
+        {
+            return;
+        }
+
+        // getScenes(true) devuelve solo las escenas activas, nunca una ya pausada.
+        // Los niveles son los unicos que tienen pausarJuego(), asi que este filtro
+        // deja fuera los menus (que no hay que pausar).
+        juego.scene.getScenes(true)
+            .filter(escena => typeof escena.pausarJuego === 'function')
+            .forEach(escena => escena.pausarJuego());
+    });
 }
 
 iniciarJuego();

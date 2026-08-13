@@ -1,11 +1,19 @@
 import { Scene } from 'phaser';
 import { ANCHO, ALTO, FUENTE_TITULO, FUENTE_TEXTO } from '../medidas.js';
+import { esDispositivoTactil } from '../controlesTactiles.js';
 
-const CONTROLES = [
+const CONTROLES_TECLADO = [
     '←   Mover a la izquierda',
     '→   Mover a la derecha',
     '↑   Saltar',
     'ESC  Pausa'
+];
+
+// En movil no hay teclado: se juega con el joystick y el boton de la pantalla
+const CONTROLES_TACTILES = [
+    'Joystick (abajo izq.)  Moverte',
+    'Boton ▲ (abajo dcha.)  Saltar',
+    '|| Pausa (arriba dcha.)  Pausa'
 ];
 
 export class EscenaControles extends Scene {
@@ -24,7 +32,9 @@ export class EscenaControles extends Scene {
             strokeThickness: 8
         }).setOrigin(0.5);
 
-        CONTROLES.forEach((linea, i) => {
+        const controles = esDispositivoTactil() ? CONTROLES_TACTILES : CONTROLES_TECLADO;
+
+        controles.forEach((linea, i) => {
             this.add.text(ANCHO / 2, 230 + (i * 55), linea, {
                 fontSize: '26px',
                 fill: '#ffffff',

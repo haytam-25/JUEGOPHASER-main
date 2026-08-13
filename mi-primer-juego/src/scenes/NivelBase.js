@@ -1,5 +1,6 @@
 import { Scene, Math as MathPhaser, Input } from 'phaser';
 import { ANCHO, ALTO, DESPLAZAMIENTO_X, FUENTE_TITULO, FUENTE_TEXTO } from '../medidas.js';
+import { ControlesTactiles, esDispositivoTactil } from '../controlesTactiles.js';
 
 // Ajustes del jugador, iguales en los tres niveles.
 // La x es relativa al mapa: luego se le suma DESPLAZAMIENTO_X.
@@ -185,6 +186,7 @@ export class NivelBase extends Scene {
     {
         this.cursors = this.input.keyboard.createCursorKeys();
         this.escapeKey = this.input.keyboard.addKey(Input.Keyboard.KeyCodes.ESC);
+        this.controlesTactiles = new ControlesTactiles(this);
     }
 
     crearMarcador ()
@@ -205,11 +207,24 @@ export class NivelBase extends Scene {
             fontFamily: FUENTE_TITULO
         }).setOrigin(0.5, 0);
 
-        this.controlesText = this.add.text(ANCHO - 24, 16, 'Menu: ESC', {
+        // En movil no hay tecla ESC, asi que el propio rotulo hace de boton de pausa
+        const enTactil = esDispositivoTactil();
+
+        this.controlesText = this.add.text(ANCHO - 24, 16, enTactil ? '|| Pausa' : 'Menu: ESC', {
             fontSize: '24px',
             fill: color,
             fontFamily: FUENTE_TEXTO
         }).setOrigin(1, 0);
+
+        if (enTactil)
+        {
+            // Area de pulsacion mas grande que el texto, para acertar con el dedo
+            this.controlesText
+                .setInteractive({ useHandCursor: true })
+                .input.hitArea.setTo(-20, -14, this.controlesText.width + 40, this.controlesText.height + 28);
+
+            this.controlesText.on('pointerdown', () => this.pausarJuego());
+        }
 
         // El marcador siempre por encima del jugador y de los objetos
         [ this.puntosText, this.nivelText, this.controlesText ].forEach(texto => texto.setDepth(10));
@@ -246,23 +261,36 @@ export class NivelBase extends Scene {
     {
         if (Input.Keyboard.JustDown(this.escapeKey))
         {
-            this.scene.pause();
-            this.scene.launch('EscenaPausa');
-            this.scene.bringToTop('EscenaPausa');
+            this.pausarJuego();
         }
 
         this.moverJugador();
         this.alActualizar();
     }
 
+    pausarJuego ()
+    {
+        // Se sueltan los controles tactiles antes de pausar, para que el jugador
+        // no siga moviendose solo al continuar
+        this.controlesTactiles.reiniciarEstado();
+
+        this.scene.pause();
+        this.scene.launch('EscenaPausa');
+        this.scene.bringToTop('EscenaPausa');
+    }
+
     moverJugador ()
     {
-        if (this.cursors.left.isDown)
+        const izquierda = this.cursors.left.isDown || this.controlesTactiles.izquierda;
+        const derecha = this.cursors.right.isDown || this.controlesTactiles.derecha;
+        const salto = this.cursors.up.isDown || this.controlesTactiles.saltando;
+
+        if (izquierda)
         {
             this.player.setVelocityX(-JUGADOR.velocidad);
             this.player.anims.play('left', true);
         }
-        else if (this.cursors.right.isDown)
+        else if (derecha)
         {
             this.player.setVelocityX(JUGADOR.velocidad);
             this.player.anims.play('right', true);
@@ -273,7 +301,7 @@ export class NivelBase extends Scene {
             this.player.anims.play('turn');
         }
 
-        if (this.cursors.up.isDown && this.player.body.touching.down)
+        if (salto && this.player.body.touching.down)
         {
             this.player.setVelocityY(JUGADOR.salto);
         }
