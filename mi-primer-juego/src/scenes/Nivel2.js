@@ -13,12 +13,12 @@ export class Nivel2 extends NivelBase
                 capaColisiones: 'ColTierranivel2'
             },
             titulo: 'NIVEL 2',
-            colorTexto: '#000'
+            colorTexto: '#FFF3D6'
         });
     }
 
     alRecogerTodosLosFajos ()
     {
-        this.scene.start('Nivel3');
+        this.cambiarDeNivel('Nivel3');
     }
 }

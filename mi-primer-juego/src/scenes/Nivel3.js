@@ -1,6 +1,7 @@
 import { Math as MathPhaser } from 'phaser';
 import { NivelBase } from './NivelBase';
 import { ANCHO, ALTO, FUENTE_TEXTO } from '../medidas.js';
+import { COLORES, crearPanel } from '../ui.js';
 
 // Ajustes de las bolas de fuego
 const BOLA = {
@@ -41,11 +42,16 @@ export class Nivel3 extends NivelBase
 
         this.bolasFuego = this.physics.add.group({ allowGravity: false });
 
-        this.bolasText = this.add.text(24, 52, 'Bolas de fuego: 0', {
+        // Segundo panel debajo de la puntuacion
+        crearPanel(this, 151, 88, 270, 44, 0.6).setDepth(10);
+
+        this.bolasText = this.add.text(151, 88, 'Bolas de fuego: 0', {
             fontSize: '22px',
             fill: this.ajustes.colorTexto,
-            fontFamily: FUENTE_TEXTO
-        }).setDepth(10);
+            fontFamily: FUENTE_TEXTO,
+            stroke: COLORES.sombra,
+            strokeThickness: 4
+        }).setOrigin(0.5).setDepth(11);
 
         this.physics.add.overlap(this.player, this.bolasFuego, this.morirJugador, null, this);
     }
@@ -111,6 +117,19 @@ export class Nivel3 extends NivelBase
         // Hitbox redonda centrada en la textura, mas justa que la caja cuadrada por defecto
         const desfase = (BOLA.tamanoTextura / 2) - BOLA.radio;
         bola.setCircle(BOLA.radio, desfase, desfase);
+        bola.setDepth(5);
+
+        // Estela de chispas que sigue a la bola
+        this.add.particles(0, 0, 'chispa', {
+            follow: bola,
+            frequency: 25,
+            speed: { min: 5, max: 30 },
+            scale: { start: 1.4, end: 0 },
+            alpha: { start: 0.8, end: 0 },
+            lifespan: 450,
+            tint: [ 0xffcc00, 0xff6600, 0xff2200 ],
+            blendMode: 'ADD'
+        }).setDepth(4);
 
         this.reiniciarBolaFuego(bola);
     }

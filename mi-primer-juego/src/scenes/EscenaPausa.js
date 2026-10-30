@@ -1,5 +1,6 @@
 import { Scene } from 'phaser';
-import { ANCHO, ALTO, FUENTE_TITULO, FUENTE_TEXTO } from '../medidas.js';
+import { ANCHO, ALTO, FUENTE_TITULO } from '../medidas.js';
+import { COLORES, crearPanel, crearBoton } from '../ui.js';
 
 export class EscenaPausa extends Scene {
     constructor() {
@@ -9,26 +10,28 @@ export class EscenaPausa extends Scene {
     create() {
         this.add.rectangle(ANCHO / 2, ALTO / 2, ANCHO, ALTO, 0x000000, 0.6);
 
+        crearPanel(this, ANCHO / 2, 305, 440, 400, 0.92);
+
         this.add.text(ANCHO / 2, 160, 'PAUSA', {
             fontSize: '54px',
             fill: '#FFD700',
             fontFamily: FUENTE_TITULO,
-            stroke: '#3b1d05',
+            stroke: COLORES.sombra,
             strokeThickness: 8
         }).setOrigin(0.5);
 
-        this.crearOpcion(290, 'Continuar', '#7CFC00', nivel => {
+        this.crearOpcion(260, 'Continuar', '#7CFC00', nivel => {
             this.scene.stop();
             this.scene.resume(nivel);
         });
 
-        this.crearOpcion(360, 'Reiniciar', '#ff5555', nivel => {
+        this.crearOpcion(340, 'Reiniciar', '#ff7b5c', nivel => {
             this.scene.stop('EscenaPausa');
             this.scene.stop(nivel);
             this.scene.start(nivel);
         });
 
-        this.crearOpcion(430, 'Volver al Menú', '#FFD700', nivel => {
+        this.crearOpcion(420, 'Volver al Menú', '#FFD700', nivel => {
             this.scene.stop('EscenaPausa');
             this.scene.stop(nivel);
             this.scene.start('EscenaMenu');
@@ -40,18 +43,7 @@ export class EscenaPausa extends Scene {
      * el nivel que quedo pausado y se lo pasa como parametro.
      */
     crearOpcion(y, texto, color, accion) {
-        const boton = this.add.text(ANCHO / 2, y, texto, {
-            fontSize: '30px',
-            fill: color,
-            fontFamily: FUENTE_TEXTO
-        })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true });
-
-        boton.on('pointerover', () => boton.setScale(1.12));
-        boton.on('pointerout', () => boton.setScale(1));
-
-        boton.on('pointerdown', () => {
+        crearBoton(this, ANCHO / 2, y, texto, () => {
             const nivel = this.buscarNivelPausado();
 
             if (!nivel) {
@@ -60,7 +52,7 @@ export class EscenaPausa extends Scene {
             }
 
             accion(nivel);
-        });
+        }, { color, tamano: 28, ancho: 340, alto: 60 });
     }
 
     // Devuelve la clave de la escena que esta pausada por detras (el nivel en curso)

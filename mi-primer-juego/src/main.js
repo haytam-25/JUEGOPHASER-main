@@ -16,6 +16,13 @@ const config = {
     width: ANCHO,
     height: ALTO,
     parent: 'game-container',
+    backgroundColor: '#1a1008',
+
+    // Redondea las posiciones a pixeles enteros: sin esto el personaje se ve
+    // borroso mientras se mueve (queda en posiciones como y = 547.35)
+    render: {
+        roundPixels: true
+    },
 
     scale: {
         mode: Scale.FIT,

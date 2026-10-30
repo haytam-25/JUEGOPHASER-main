@@ -13,12 +13,12 @@ export class Game extends NivelBase
                 capaColisiones: 'coltierra'
             },
             titulo: 'NIVEL 1',
-            colorTexto: '#000'
+            colorTexto: '#FFE9A8'
         });
     }
 
     alRecogerTodosLosFajos ()
     {
-        this.scene.start('Nivel2');
+        this.cambiarDeNivel('Nivel2');
     }
 }

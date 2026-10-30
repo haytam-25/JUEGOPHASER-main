@@ -22,9 +22,8 @@ export default defineConfig({
     build: {
         rollupOptions: {
             output: {
-                manualChunks: {
-                    phaser: ['phaser']
-                }
+                // Vite 8 (Rolldown) solo acepta una funcion: Phaser va en su propio archivo
+                manualChunks: (id) => id.includes('node_modules/phaser') ? 'phaser' : undefined
             }
         },
         minify: 'terser',
